@@ -455,7 +455,7 @@ async function joinGame(){
   try{
     let p=participants.find(x=>x.name===name);
     if(!p){
-      p={name,photoFindings:{},codeFindings:{},totalPoints:0,joinTime:Date.now()};
+      p={name,totalPoints:0,joinTime:Date.now()};
       await saveParticipant(p);
     }
     currentPlayer=p;
