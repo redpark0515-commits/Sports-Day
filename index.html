@@ -635,8 +635,21 @@ function renderLeaderboard(){
 // ================================================================
 function initEditTreasures(){editTreasures=treasures.length?JSON.parse(JSON.stringify(treasures)):Array.from({length:5},(_,i)=>({id:`t${i+1}`,name:`보물 ${i+1}`,code:`CODE${String(i+1).padStart(2,'0')}`,photoPoints:50,codePoints:100,hint:''}));renderAdminTreasures();}
 function renderAdminTreasures(){document.getElementById('admin-treasure-list').innerHTML=editTreasures.map((t,i)=>`<div class="t-admin-card"><div class="gold" style="font-size:0.85rem;font-weight:bold;margin-bottom:0.7rem">📍 보물 ${i+1}</div><div class="grid2"><div><label>이름</label><input class="input-sm" value="${escH(t.name)}" onchange="editTreasures[${i}].name=this.value"/></div><div><label>코드 (대문자)</label><input class="input-sm" value="${escH(t.code)}" style="text-transform:uppercase;letter-spacing:0.06em" oninput="this.value=this.value.toUpperCase();editTreasures[${i}].code=this.value"/></div></div><div class="grid2"><div><label>📷 사진 점수</label><input class="input-sm" type="number" value="${t.photoPoints}" onchange="editTreasures[${i}].photoPoints=Number(this.value)"/></div><div><label>🔑 보물 점수</label><input class="input-sm" type="number" value="${t.codePoints}" onchange="editTreasures[${i}].codePoints=Number(this.value)"/></div></div><div><label>힌트 (선택)</label><input class="input-sm" value="${escH(t.hint)}" placeholder="위치 힌트" onchange="editTreasures[${i}].hint=this.value"/></div></div>`).join('');}
-async function saveTreasures(){const obj={};editTreasures.forEach(t=>{obj[t.id]=t;});try{await dbSet('treasures',obj);alert('✅ 저장되었습니다!');}catch(e){alert('저장 실패: '+e.message);}}
-
+async function saveTreasures(){
+  const obj={};
+  editTreasures.forEach(t=>{
+    obj[t.id]={
+      id: String(t.id||''),
+      name: String(t.name||''),
+      code: String(t.code||''),
+      photoPoints: Number(t.photoPoints)||0,
+      codePoints: Number(t.codePoints)||0,
+      hint: String(t.hint||'')
+    };
+  });
+  try{await dbSet('treasures',obj);alert('✅ 저장되었습니다!');}
+  catch(e){alert('저장 실패: '+e.message);}
+}
 function renderAdminPhotos(){
   const pend=photos.filter(p=>p.status==='pending');
   document.getElementById('tab-btn-photos').innerHTML=`📷 사진 승인${pend.length?'<span class="notif-dot"></span>':''}`;
